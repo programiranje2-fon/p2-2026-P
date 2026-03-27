@@ -22,7 +22,6 @@ def demonstrate_dictionaries():
     - print a non-empty dictionary
         - print all items using the items() function
         - print one item per line
-    - pprint dictionary in one column
     - add/remove items to/from a dictionary
     - update a dictionary with the items from another dictionary or from an iterable of (k, v) pairs using dict.update()
     - using the keys() and values() functions

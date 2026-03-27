@@ -31,7 +31,7 @@ print(demonstrate_annotations(song, year))
 
 
 #%%
-def show_song(title, author=ringo, year: int = 1968):
+def show_song(title, author=george, year: int = 1966):
 
     """Demonstrates default arguments/parameters.
     - print locals()
