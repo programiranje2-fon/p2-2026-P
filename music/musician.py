@@ -414,6 +414,30 @@ bob.tell()
 #%%
 # Single object
 from json_tricks import loads, dumps
+bob = SingerSongwriter(name='Bob Dylan', vocals=Vocals.LEAD_VOCALS,
+                       instrument=Instrument.RHYTHM_GUITAR, is_band_member=False)
+bob_str = dumps(bob, indent=4)
+print(bob_str)
+print()
+
+bob_loaded = loads(bob_str)
+print(bob_loaded == bob)
 
 #%%
 # List of objects
+from json_tricks import loads, dumps
+
+bob = SingerSongwriter(name='Bob Dylan', vocals=Vocals.LEAD_VOCALS,
+                       instrument=Instrument.RHYTHM_GUITAR, is_band_member=False)
+ringoStarr = Musician(name='Ringo Starr', is_band_member=True)
+rickWright = Musician('Rick Wright')
+
+d = [bob, ringoStarr, rickWright]
+d_str = dumps(d, indent=4)
+print(d_str)
+print()
+
+b, r, w = loads(d_str)
+print(b == bob)
+print(r == ringoStarr)
+print(w == rickWright)

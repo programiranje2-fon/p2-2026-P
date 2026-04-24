@@ -39,6 +39,8 @@ class Band:
         self.end = end
 
         # Code to check if the band name is specified correctly (possibly raises BandNameError)
+        if not isinstance(self.name, str) or len(self.name) < 2:
+            raise BandNameError(self.name)
 
         # self.__i = 0                                  # introduce and initialize iterator counter, self.__i
 
@@ -47,7 +49,7 @@ class Band:
         s = format_date(self.start)
         e = format_date(self.end)
         m = ', '.join([str(m) for m in self.members])
-        return f'{b} ({format_date(s)} - {format_date(e)}): {m}' if m else f'{b} ({s} - {e})'
+        return f'{b} ({s} - {e}): {m}' if m else f'{b} ({s} - {e})'
 
     def __eq__(self, other):
         pass
@@ -72,6 +74,8 @@ class Band:
         So, the valid date to denote the start of a band's career is between Jan 01, 1960, and today.
         """
 
+        return date(1954, 5, 5) <= d <= date.today()
+
     def __iter__(self):
         """Once __iter__() and __next__() are implemented in a class,
         we can create an iterator object by calling the iter() built-in function on an object of the class,
@@ -83,13 +87,20 @@ class Band:
 
         # self.__i = 0
         # return self               # sufficient if the iterator counter is introduced and initialized in __init__()
+        self.__i = 0
+        return self
 
     def __next__(self):
-        pass
+        if self.__i < len(self.members):
+            self.__i += 1
+            return self.members[self.__i - 1]
+        else:
+            raise StopIteration
 
 
 #%%
 # Check class variables
+print(Band.genres)
 
 #%%
 # Test the basic methods (__init__(), __str__(),...)
@@ -101,20 +112,56 @@ print(the_beatles == Band('The Beatles', *[johnLennon, paulMcCartney, georgeHarr
 
 #%%
 # Test the date validator (@staticmethod is_date_valid(<date>))
+print(Band.is_date_valid(date(1964, 3, 5)))
 
 #%%
 # Test the iterator (initialize it with iter(<band>) and call next(<iterator) in a loop to return all <band> members)
+the_beatles = Band('The Beatles', *[johnLennon, paulMcCartney, georgeHarrison, ringoStarr],
+                   start=date(1957, 7, 6), end=date(1970, 4, 10))
+i = iter(the_beatles)
+while 3:
+    try:
+        print(next(i))
+    except StopIteration:
+        break
+# print(next(i))
 
 #%%
 def next_member(band):
-    pass
+    """Generator that shows members of a band, one at a time.
+    yield produces a generator object, on which we call the next() built-in function.
+    A great tutorial on generators: https://realpython.com/introduction-to-python-generators/.
+    """
+
+    for m in band:
+        input('Next: ')
+        yield m
+        print('Yeah!')
+
 
 #%%
 # Test next_member(band)
 # (initialize it with next_member(<band>) and call next(<generator>) in a loop to return/generate all <band> members)
 
+the_beatles = Band('The Beatles', *[johnLennon, paulMcCartney, georgeHarrison, ringoStarr],
+                   start=date(1957, 7, 6), end=date(1970, 4, 10))
+n = next_member(the_beatles)
+while 3:
+    try:
+        print(next(n))
+    except StopIteration:
+        break
+print(next(n))
+
 #%%
 # Demonstrate generator expressions
+g = (x**2 for x in range(4))
+print(g)
+while 1:
+    try:
+        print(next(g))
+    except StopIteration:
+        break
 
 #%%
 class BandError(Exception):
@@ -133,6 +180,8 @@ class BandNameError(BandError):
         """ It is usually sufficient just to call Exception.__init__() and pass self and an f-string that
         includes the other argument(s) and prints the error message;
         it can be followed by self.<other> = <other> statement(s) for completeness."""
+        Exception.__init__(self, f'Invalid band name \'{name}\'')
+        self.name = name
 
 
 #%%
@@ -144,32 +193,117 @@ class BandNameError(BandError):
 # (relevant for exception handling).
 # To write error messages to the exception console, use sys.stderr.write(f'...').
 
+the_beatles = Band('The Beatles', *[johnLennon, paulMcCartney, georgeHarrison, ringoStarr],
+                   start=date(1957, 7, 6), end=date(1970, 4, 10))
+try:
+    for i in range(5):
+        print(the_beatles.members[i])
+except Exception as e:
+    # print(f'Error: {e}')
+    sys.stderr.write(f'\nError: {e}\n')
+    sys.stderr.write(f'{type(e).__name__}: {e.args[0]}\n')
+
 #%%
 # Catching multiple exceptions and the 'finally' clause
+the_beatles = Band('The Beatles', *[johnLennon, paulMcCartney, georgeHarrison, ringoStarr],
+                   start=date(1957, 7, 6), end=date(1970, 4, 10))
+try:
+    for i in range(4):
+        print(the_beatles.members[i])
+    # print(1/0)
+except IndexError as e:
+    sys.stderr.write(f'{type(e).__name__}: {e.args[0]}\n')
+except ZeroDivisionError as e:
+    sys.stderr.write(f'{type(e).__name__}: {e.args[0]}\n')
+finally:
+    print('\'finally\' clause executed regardless of the exception raised.')
 
 #%%
 # Using the 'else' clause (must be after all 'except' clauses)
+the_beatles = Band('The Beatles', *[johnLennon, paulMcCartney, georgeHarrison, ringoStarr],
+                   start=date(1957, 7, 6), end=date(1970, 4, 10))
+try:
+    for i in range(4):
+        print(the_beatles.members[i])
+    # print(1/0)
+except IndexError as e:
+    sys.stderr.write(f'{type(e).__name__}: {e.args[0]}\n')
+except ZeroDivisionError as e:
+    sys.stderr.write(f'{type(e).__name__}: {e.args[0]}\n')
+else:
+    print('No exception was raised.')
+
 
 #%%
 # Catching 'any' exception - empty 'except' clause
+the_beatles = Band('The Beatles', *[johnLennon, paulMcCartney, georgeHarrison, ringoStarr],
+                   start=date(1957, 7, 6), end=date(1970, 4, 10))
+try:
+    for i in range(5):
+        print(the_beatles.members[i])
+    # print(1/0)
+except:
+    sys.stderr.write('\nAn exception was raised.\n')
+
 
 #%%
 # Catching user-defined exceptions
+try:
+    the_beatles = Band('', *[johnLennon, paulMcCartney, georgeHarrison, ringoStarr],
+                        start=date(1957, 7, 6), end=date(1970, 4, 10))
+except BandNameError as e:
+    sys.stderr.write(f'{type(e).__name__}: {e.args[0]}\n')
 
 #%%
 # Demonstrate working with files
 
+theBeatles = Band('The Beatles', *[johnLennon, paulMcCartney, georgeHarrison, ringoStarr],
+                  start=date(1957, 7, 6), end=date(1970, 4, 10))
+theRollingStones = Band('The Rolling Stones', *[mickJagger, keithRichards, ronWood, charlieWatts],
+                        start=date(1962, 7, 12))
+greenDay = Band('Green Day', *[billyJoeArmstrong, mikeDirnt, treCool])
+
+bands = [theBeatles, theRollingStones, greenDay]
+
+
 #%%
 # Writing to a text file - <outfile>.write(str(<obj>), <outfile>.writelines([str(<obj>)+'\n' for <obj> in <objs>])
+file = get_data_dir() / 'bands.txt'
+with open(file, 'w') as f:
+    # for b in bands:
+    #     f.write(str(b)+'\n')
+    f.writelines([str(b)+'\n' for b in bands])
+print('Done')
 
 #%%
 # Demonstrate reading from a text file - <infile>.readline(), <infile>.readlines(), <infile>.read()
+file = get_data_dir() / 'bands.txt'
+with open(file, 'r') as f:
+    # bands_from_file = f.readlines()
+    # bands_from_file = f.read().splitlines()
+    # bands_from_file = f.read()
+    bands_from_file = []
+    while 2:
+        line = f.readline().strip()
+        if not line:
+            break
+        bands_from_file.append(line)
+print(bands_from_file)
 
 #%%
 # Demonstrate writing to a binary file - pickle.dump(<obj>, <outfile>)
+f = get_data_dir() / 'bands.bin'
+with open(f, 'wb') as f:
+    pickle.dump(bands, f)
+print('Done')
 
 #%%
 # Demonstrate reading from a binary file - pickle.load(<infile>)
+f = get_data_dir() / 'bands.bin'
+with open(f, 'rb') as f:
+    bands_from_file = pickle.load(f)
+for b in bands_from_file:
+    print(b)
 
 #%%
 # Demonstrate JSON encoding/decoding of Band objects

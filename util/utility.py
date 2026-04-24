@@ -23,7 +23,7 @@ def format_date(a_date):
 
 #%%
 # Test format_date(a_date)
-print(format_date(date(1940, 7, 7)))
+print(format_date(date(1966, 8, 5)))
 
 #%%
 # Demonstrate pathlib.Path
@@ -33,9 +33,9 @@ print(format_date(date(1940, 7, 7)))
 # - parent dir: <path>.parent
 print(Path.home())
 print(Path.cwd())
-print(Path('.').absolute())
-print(Path().absolute())
-print(Path('.'))
+print(Path('..').absolute())
+print(Path('..').parent)
+print(Path.cwd().absolute().parent)
 print(Path().absolute().parent)
 
 
@@ -45,14 +45,10 @@ print(Path().absolute().parent)
 #            <newDir>.mkdir(parents=True, exist_ok=True)
 # - remove dir: <dir>.rmdir()                                           # requires the <dir> to be empty
 # - project dir: settings.PROJECT_DIR
-
-new_dir = PROJECT_DIR / 'new_dir'
-print(new_dir)
+new_dir = Path(PROJECT_DIR, 'new_dir')
 new_dir.mkdir(parents=True, exist_ok=True)
-print(new_dir.exists())
-
-print(new_dir.rmdir())
-print(new_dir.exists())
+print(new_dir)
+new_dir.rmdir()
 
 
 #%%
@@ -61,6 +57,7 @@ def get_project_dir():
     """
 
     return PROJECT_DIR
+
 
 #%%
 # Demonstrate get_project_dir()
@@ -80,4 +77,3 @@ def get_data_dir():
 #%%
 # Demonstrate get_data_dir()
 print(get_data_dir())
-print(type(get_data_dir()))
